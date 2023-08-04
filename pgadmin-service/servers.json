@@ -1,0 +1,14 @@
+{
+    "Servers": {
+      "1": {
+        "Name": "db-service",
+        "Group": "Servers",
+        "Host": "db-service",
+        "Port": 5432,
+        "MaintenanceDB": "users_db",
+        "Username": "admin",
+        "PGPASSFILE": "/run/secrets/db-url",
+        "SSLMode": "prefer"
+      }
+    }
+  }

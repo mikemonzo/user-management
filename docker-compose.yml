@@ -1,0 +1,87 @@
+version: '3,8'
+services:
+# database service for a service
+  db-service:
+    build:
+      context: ./db-service
+      dockerfile: Dockerfile
+    # restart: always
+    container_name: db-service
+    secrets:
+      - db-user
+      - db-pass
+      - db-db
+      - db-url
+    environment:
+      POSTGRES_USER_FILE: /run/secrets/db-user
+      POSTGRES_PASSWORD_FILE: /run/secrets/db-pass
+      POSTGRES_DB_FILE: /run/secrets/db-db
+    # you can access the database service using browser from: POSTGRES_PORT and from within docker: POSTGRES_CONTAINER_PORT
+    ports:
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+    volumes:
+      -  db-service-VL:/var/lib/postgresql/data # persist data between container innovations
+      # - ./db-service/postgresql.conf.dev:/etc/postgresql.conf
+# we use pgAdmin to connect to postgress databse servers. when you add a new postgres server, register it in pgAdmin.
+# use the server container names as adderess and continer ports to access them. 
+  pgadmin:
+    build:
+      context: ./pgadmin-service
+      dockerfile: Dockerfile
+    container_name: pgadmin-service
+    # restart: always
+    env_file:
+      - ./pgadmin-service/.env
+    ports:
+      - "${PGADMIN__PORT}:${PGADMIN_CONTAINER_PORT}" # Map port between host machine PGADMIN__PORT and container PGADMIN_CONTAINER_PORT. read from .env of compose.
+    secrets:
+      - db-url
+    volumes:
+      - ./pgadmin-service/servers.json:/pgadmin4/servers.json # preconfigured servers/connections. you can also register servers on the user interface of pgadmin.
+    depends_on:
+      - db-service
+
+  go-service:
+    build:
+      context: ./go-service
+      dockerfile: Dockerfile
+      # target: developement
+    container_name: go-service
+    command: sleep infinity
+    environment:
+      DATABSE_SCHEME: postgresql
+      DATABSE_DOMAIN: db-service
+      DATABSE_PORT: ${POSTGRES_PORT}
+      DATABSE_USER_FILE: /run/secrets/db-user
+      DATABSE_PASSWORD_FILE: /run/secrets/db-pass
+      DATABSE_DB_FILE: /run/secrets/db-db
+      SERVER_PORT: ${GO_SERVICE_PORT}
+    secrets:
+      - db-user
+      - db-pass
+      - db-db
+    env_file:
+      - ./go-service/.env
+    # you can access the database service using browser from: POSTGRES_PORT and from within docker: POSTGRES_CONTAINER_PORT
+    ports:
+      - ${GO_SERVICE_PORT}:${GO_SERVICE_PORT}
+    #The volume is used to mount the code in local folder into the container. This is for the development
+    #environment in order to update the container whenever a change to the source code has made. each time we run the container, the code is rebuilt.
+    volumes:
+      - ./go-service:/usr/src/app # mount a local path (go-service) to container path. each time we change the code and then restart this service, the build starts again. see dockerfile for go service.
+    depends_on:
+      - db-service
+
+volumes:
+  db-service-VL:
+  pgadmin-serviceVL:
+
+secrets:
+  db-user:
+    file: db-service/user.txt
+  db-pass:
+    file: db-service/pass.txt
+  db-db:
+    file: db-service/db.txt
+  db-url:
+    file: db-service/url.txt
