@@ -1,0 +1,13 @@
+<mxfile host="65bd71144e">
+    <diagram id="7DWsoPkKNMvV58tK7Xqh" name="Page-1">
+        <mxGraphModel dx="0" dy="467" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="3" value="&lt;h1&gt;Heading&lt;/h1&gt;&lt;p&gt;• Concesionaria: Concesionaria a la que pertenece el operador.&lt;br/&gt;• Operador: Código de usuario del operador.&lt;br/&gt;• Título: Señor o señora, según el género.&lt;br/&gt;• Nombre: Nombre del operador.&lt;br/&gt;• Apellidos: Apellidos del operador.&lt;br/&gt;• Dirección: La dirección del operador.&lt;br/&gt;• E-mail: Correo electrónico del operador.&lt;br/&gt;• Teléfono: Teléfono guardado de operador.&lt;br/&gt;• Estado: Estado en el que se encuentra el operador (activo, inactivo).&lt;br/&gt;• Grupo: Código de identificación del grupo al que pertenece el operador.&lt;br/&gt;• Tipo de documento y número: tipo y número de documento de identificación...&lt;br/&gt;• Estado: Indicador de si el operador está activo o inactivo en el sistema. Este campo sólo aparece cuando se ha accedido mediante la opción de modificación de un operario ya existente.&lt;br/&gt;• Contraseña: Contraseña para el acceso del usuario al sistema.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="230" y="180" width="510" height="310" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>
