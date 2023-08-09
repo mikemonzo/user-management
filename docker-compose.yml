@@ -1,27 +1,27 @@
 version: '3,8'
 services:
 # database service for a service
-  db-service:
+  user-management-db-service:
     build:
-      context: ./db-service
+      context: ./user-management-db-service
       dockerfile: Dockerfile
     # restart: always
-    container_name: db-service
+    container_name: user-management-db-service
     secrets:
-      - db-user
-      - db-pass
-      - db-db
-      - db-url
+      - user-management-db-user
+      - user-management-db-pass
+      - user-management-db-db
+      - user-management-db-url
     environment:
-      POSTGRES_USER_FILE: /run/secrets/db-user
-      POSTGRES_PASSWORD_FILE: /run/secrets/db-pass
-      POSTGRES_DB_FILE: /run/secrets/db-db
+      POSTGRES_USER_FILE: /run/secrets/user-management-db-user
+      POSTGRES_PASSWORD_FILE: /run/secrets/user-management-db-pass
+      POSTGRES_DB_FILE: /run/secrets/user-management-db-db
     # you can access the database service using browser from: POSTGRES_PORT and from within docker: POSTGRES_CONTAINER_PORT
     ports:
-      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
+      - '${USER_MANAGEMENT_POSTGRES_PORT}:${USER_MANAGEMENT_POSTGRES_PORT}'
     volumes:
-      -  db-service-VL:/var/lib/postgresql/data # persist data between container innovations
-      # - ./db-service/postgresql.conf.dev:/etc/postgresql.conf
+      -  user-management-db-service-VL:/var/lib/postgresql/data # persist data between container innovations
+      # - ./user-management-db-service/postgresql.conf.dev:/etc/postgresql.conf
 # we use pgAdmin to connect to postgress databse servers. when you add a new postgres server, register it in pgAdmin.
 # use the server container names as adderess and continer ports to access them. 
   pgadmin:
@@ -35,53 +35,53 @@ services:
     ports:
       - "${PGADMIN__PORT}:${PGADMIN_CONTAINER_PORT}" # Map port between host machine PGADMIN__PORT and container PGADMIN_CONTAINER_PORT. read from .env of compose.
     secrets:
-      - db-url
+      - user-management-db-url
     volumes:
       - ./pgadmin-service/servers.json:/pgadmin4/servers.json # preconfigured servers/connections. you can also register servers on the user interface of pgadmin.
     depends_on:
-      - db-service
+      - user-management-db-service
 
-  go-service:
+  user-management-service:
     build:
-      context: ./go-service
+      context: ./user-management-service
       dockerfile: Dockerfile
       # target: developement
-    container_name: go-service
+    container_name: user-management-service
     command: sleep infinity
     environment:
       DATABSE_SCHEME: postgresql
-      DATABSE_DOMAIN: db-service
-      DATABSE_PORT: ${POSTGRES_PORT}
-      DATABSE_USER_FILE: /run/secrets/db-user
-      DATABSE_PASSWORD_FILE: /run/secrets/db-pass
-      DATABSE_DB_FILE: /run/secrets/db-db
-      SERVER_PORT: ${GO_SERVICE_PORT}
+      DATABSE_DOMAIN: user-management-db-service
+      DATABSE_PORT: ${USER_MANAGEMENT_POSTGRES_PORT}
+      DATABSE_USER_FILE: /run/secrets/user-management-db-user
+      DATABSE_PASSWORD_FILE: /run/secrets/user-management-db-pass
+      DATABSE_DB_FILE: /run/secrets/user-management-db-db
+      SERVER_PORT: ${USER_MANAGEMENT_SERVICE_PORT}
     secrets:
-      - db-user
-      - db-pass
-      - db-db
+      - user-management-db-user
+      - user-management-db-pass
+      - user-management-db-db
     env_file:
-      - ./go-service/.env
+      - ./user-management-service/.env
     # you can access the database service using browser from: POSTGRES_PORT and from within docker: POSTGRES_CONTAINER_PORT
     ports:
-      - ${GO_SERVICE_PORT}:${GO_SERVICE_PORT}
+      - ${USER_MANAGEMENT_SERVICE_PORT}:${USER_MANAGEMENT_SERVICE_PORT}
     #The volume is used to mount the code in local folder into the container. This is for the development
     #environment in order to update the container whenever a change to the source code has made. each time we run the container, the code is rebuilt.
     volumes:
-      - ./go-service:/usr/src/app # mount a local path (go-service) to container path. each time we change the code and then restart this service, the build starts again. see dockerfile for go service.
+      - ./user-management-service:/usr/src/app # mount a local path (user-management-service) to container path. each time we change the code and then restart this service, the build starts again. see dockerfile for go service.
     depends_on:
-      - db-service
+      - user-management-db-service
 
 volumes:
-  db-service-VL:
+  user-management-db-service-VL:
   pgadmin-serviceVL:
 
 secrets:
-  db-user:
-    file: db-service/user.txt
-  db-pass:
-    file: db-service/pass.txt
-  db-db:
-    file: db-service/db.txt
-  db-url:
-    file: db-service/url.txt
+  user-management-db-user:
+    file: user-management-db-service/user.txt
+  user-management-db-pass:
+    file: user-management-db-service/pass.txt
+  user-management-db-db:
+    file: user-management-db-service/db.txt
+  user-management-db-url:
+    file: user-management-db-service/url.txt
